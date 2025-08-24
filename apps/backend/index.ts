@@ -4,26 +4,27 @@ import { GenerateImage,TrainModel,GenerateImagesFromPack } from "common/types";
 import { prisma } from "db/client";
 import { S3Client } from "bun";
 import { FalAIModel } from "./models/falAiModel";
-
+import cors from "cors"
 
 dotenv.config()
 const app=express();
 const falaimodel=new FalAIModel()
 
 app.use(express.json())
-
-
+app.use(cors())
 
 app.get("/pre-signed-url",async(req:Request,res:Response)=>{
  try{
 
-    const key=`models/${Date.now()}_${Math.random()}.zip`
-   const url=S3Client.presign(`models/${Date.now()}_${Math.random()}.zip`,{
+  const key=`models/${Date.now()}_${Math.random()}.zip`
+  const url=S3Client.presign(key,{
+    method:"PUT",
     accessKeyId:process.env.S3_ACCESS_KEY,
     secretAccessKey:process.env.S3_SCRET_KEY,
     endpoint:process.env.ENDPOINT,
     bucket:process.env.BUCKET_NAME,
-    expiresIn:60*5
+    expiresIn:60*5,
+    type:"application/zip"
   })
   res.json({
     url,
