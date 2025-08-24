@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id               String    @id   @default(uuid())
+  username         String    
+  profilepicture   String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model Outputimages{
+  id              String    @id   @default(uuid())
+  imageUrl        String
+  modelId         String
+  userId          String
+  model           Model    @relation(fields: [modelId],references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  prompt          String
+  status          OutputStatusEnum  @default(Pending)
+  falAiRequestId  String?
+  @@index([falAiRequestId])
+}
+
+model Model {
+  id              String      @id   @default(uuid())
+  name            String
+  type            ModelTypeEnum
+  age             Int
+  ethinicity      EthenecityEnum  
+  eyeColor        EyeColorEnum
+  bald            Boolean
+  userId          String
+  outputimages    Outputimages[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  triggerWord     String?
+  tensorPath      String?
+  status          ModelStatusEnum @default(Pending)
+  falAiRequestId  String?
+  zipUrl          String
+  @@index([falAiRequestId])
+}
+
+model Pack{
+  id           String  @id   @default(uuid())
+  name         String
+  packprompts  Packprompt[]
+}
+
+model Packprompt{
+  id     String  @id @default(uuid())
+  prompt String
+  packId String
+  pack   Pack    @relation(fields:[packId],references:[id])
+}
+
+enum EthenecityEnum {
+  White
+  Black
+  Asian_American    @map("Asian American")
+  East_Asian        @map("East Asian")
+  South_East_Asian  @map("South East Asian")
+  South_Asian       @map("South Asian")
+  Middle_Eastern    @map("Middle Eastern")
+  Pacific
+  Hispanic
+}
+
+enum EyeColorEnum {
+  Brown
+  Blue
+  Hazel
+  Gray
+}
+
+enum ModelTypeEnum {
+  Man
+  Woman
+  Others
+}
+
+enum OutputStatusEnum{
+  Pending
+  Generated
+  Failed
+}
+
+enum ModelStatusEnum{
+  Pending
+  Generated
+  Failed
+}
