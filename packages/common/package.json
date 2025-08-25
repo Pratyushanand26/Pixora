@@ -10,7 +10,8 @@
     "typescript": "^5"
   },
   "exports":{
-    "./types":"./types.ts"
+    "./types":"./types.ts",
+    "./inferred":"./inferred-types.ts"
   },
   "dependencies": {
     "zod": "^4.0.5"

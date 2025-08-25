@@ -1,9 +1,23 @@
-import { Button } from "@/components/ui/button";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import Features from "./components/Features";
+import Gallery from "./components/Gallery";
+import Pricing from "./components/Pricing";
+import Footer from "./components/Footer";
 
-export default function Home() {
+const Index = () => {
   return (
-    <div className="text-3xl font-bold underline">
-      Hello world!<Button variant="destructive">Mutthi</Button>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <Hero />
+        <Features />
+        <Gallery />
+        <Pricing />
+      </main>
+      <Footer />
     </div>
-  )
-}
+  );
+};
+
+export default Index;

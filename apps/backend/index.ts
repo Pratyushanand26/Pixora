@@ -5,6 +5,8 @@ import { prisma } from "db/client";
 import { S3Client } from "bun";
 import { FalAIModel } from "./models/falAiModel";
 import cors from "cors"
+import { authMiddleware } from "./middleware";
+import { auth } from "@clerk/nextjs/server";
 
 dotenv.config()
 const app=express();
@@ -35,7 +37,7 @@ app.get("/pre-signed-url",async(req:Request,res:Response)=>{
  }
 })
 
-app.post("/ai/generate",async(req:Request,res:Response)=>{
+app.post("/ai/generate",authMiddleware,async(req:Request,res:Response)=>{
     const parsedBody = GenerateImage.safeParse(req.body);
 
   if (!parsedBody.success) {
@@ -60,7 +62,7 @@ app.post("/ai/generate",async(req:Request,res:Response)=>{
   const data=await prisma.outputimages.create({
     data:{
         prompt:parsedBody.data.prompt,
-        userId:"123",
+        userId:req.userId,
         modelId:parsedBody.data.modelId,
         imageUrl:"",
         falAiRequestId:request_id,
@@ -71,7 +73,7 @@ app.post("/ai/generate",async(req:Request,res:Response)=>{
   })
 })
 
-app.post("/ai/train",async(req:Request,res:Response)=>{
+app.post("/ai/train",authMiddleware,async(req:Request,res:Response)=>{
 
     const parsedBody=TrainModel.safeParse(req.body);
     const images=req.body.image;
@@ -92,9 +94,9 @@ app.post("/ai/train",async(req:Request,res:Response)=>{
             ethinicity: parsedBody.data.ethinicity,
             eyeColor: parsedBody.data.eyeColor,
             bald: parsedBody.data.bald,
-            userId:"123",
             falAiRequestId:request_id,
-            zipUrl:parsedBody.data.zipUrl
+            zipUrl:parsedBody.data.zipUrl,
+            userId:req.userId
         }
     })
     res.json({
@@ -102,7 +104,7 @@ app.post("/ai/train",async(req:Request,res:Response)=>{
     })
 })
 
-app.post("/pack/generate",async(req:Request,res:Response)=>{
+app.post("/pack/generate",authMiddleware,async(req:Request,res:Response)=>{
   const parsedBody=GenerateImagesFromPack.safeParse(req.body);
   if(parsedBody.success==false){
     res.status(411).json({
@@ -118,7 +120,7 @@ app.post("/pack/generate",async(req:Request,res:Response)=>{
   const images=await prisma.outputimages.createManyAndReturn({
     data:prompts.map((prompt)=>({
       prompt:prompt.prompt,
-      userId:"123",
+      userId:req.userId,
       modelId:parsedBody.data.modelId,
       imageUrl:""
     }))
@@ -137,14 +139,14 @@ app.get("/pack/bulk",(req:Request,res:Response)=>{
 
 })
 
-app.get("/image/bulk",async(req:Request,res:Response)=>{
+app.get("/image/bulk",authMiddleware,async(req:Request,res:Response)=>{
  const ids=req.query.images as string[]
  const limit=req.query.limit as string??"10"
  const offset=req.query.offset as string??"0"
  const imagesData=await prisma.outputimages.findMany({
   where:{
     id:{in:ids},
-    userId:"123"
+    userId:req.userId
   },
   skip:parseInt(offset),
   take:parseInt(limit)
