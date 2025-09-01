@@ -22,7 +22,7 @@ app.get("/pre-signed-url",async(req:Request,res:Response)=>{
   const url=S3Client.presign(key,{
     method:"PUT",
     accessKeyId:process.env.S3_ACCESS_KEY,
-    secretAccessKey:process.env.S3_SCRET_KEY,
+    secretAccessKey:process.env.S3_SECRET_KEY,
     endpoint:process.env.ENDPOINT,
     bucket:process.env.BUCKET_NAME,
     expiresIn:60*5,
@@ -73,7 +73,7 @@ app.post("/ai/generate",authMiddleware,async(req:Request,res:Response)=>{
   })
 })
 
-app.post("/ai/train",authMiddleware,async(req:Request,res:Response)=>{
+app.post("/ai/training",authMiddleware,async(req:Request,res:Response)=>{
 
     const parsedBody=TrainModel.safeParse(req.body);
     const images=req.body.image;
@@ -85,23 +85,23 @@ app.post("/ai/train",authMiddleware,async(req:Request,res:Response)=>{
       return
     }
 
-    const {request_id,response_url}=await falaimodel.trainModel(parsedBody.data.zipUrl,parsedBody.data.name)
-    const model=await prisma.model.create({
-        data:{
-            name: parsedBody.data.name,
-            type: parsedBody.data.type,
-            age: parsedBody.data.age,
-            ethinicity: parsedBody.data.ethinicity,
-            eyeColor: parsedBody.data.eyeColor,
-            bald: parsedBody.data.bald,
-            falAiRequestId:request_id,
-            zipUrl:parsedBody.data.zipUrl,
-            userId:req.userId
-        }
-    })
-    res.json({
-        id:model.id
-    })
+    // const {request_id,response_url}=await falaimodel.trainModel(parsedBody.data.zipUrl,parsedBody.data.name)
+    // const model=await prisma.model.create({
+    //     data:{
+    //         name: parsedBody.data.name,
+    //         type: parsedBody.data.type,
+    //         age: parsedBody.data.age,
+    //         ethinicity: parsedBody.data.ethinicity,
+    //         eyeColor: parsedBody.data.eyeColor,
+    //         bald: parsedBody.data.bald,
+    //         falAiRequestId:request_id,
+    //         zipUrl:parsedBody.data.zipUrl,
+    //         userId:req.userId
+    //     }
+    // })
+    // res.json({
+    //     id:model.id
+    // })
 })
 
 app.post("/pack/generate",authMiddleware,async(req:Request,res:Response)=>{
