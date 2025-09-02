@@ -1,20 +1,21 @@
-export function PacksComponent() {
-  const packs = [
-    {
-      id: 1,
-      name: "Valentine's Day Pack",
-      description: "Romantic themes and settings perfect for Valentine's Day",
-      image: "https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=400",
-      price: "$9.99"
-    },
-    {
-      id: 2,
-      name: "Airplane Pack",
-      description: "Aviation themes with planes, airports, and sky backgrounds",
-      image: "https://images.pexels.com/photos/358319/pexels-photo-358319.jpeg?auto=compress&cs=tinysrgb&w=400",
-      price: "$12.99"
-    }
-  ];
+import axios from "axios"
+import { BACKEND_URL } from "../config";
+
+async function getPacks():Promise<TPack[]>{
+  const res=await axios.get(`${BACKEND_URL}/pack/bulk`)
+  return res.data;
+}
+
+interface TPack{
+   id:string
+   name:string,
+   description:string,
+   imageUrl:string
+  }
+
+export async function PacksComponent() {
+
+  const packs=await getPacks();
 
   return (
     <div>
@@ -28,7 +29,7 @@ export function PacksComponent() {
           <div key={pack.id} className="bg-slate-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-orange-500 transition-all">
             <div className="aspect-video bg-slate-700">
               <img 
-                src={pack.image} 
+                src={pack.imageUrl} 
                 alt={pack.name}
                 className="w-full h-full object-cover"
               />
@@ -37,7 +38,6 @@ export function PacksComponent() {
               <h3 className="text-xl font-semibold text-white mb-2">{pack.name}</h3>
               <p className="text-slate-300 mb-4">{pack.description}</p>
               <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold text-orange-500">{pack.price}</span>
                 <button className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md">
                   Purchase
                 </button>

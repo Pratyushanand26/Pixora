@@ -60,6 +60,8 @@ model Pack{
   id           String  @id   @default(uuid())
   name         String
   packprompts  Packprompt[]
+  description  String        @default("")
+  imageUrl     String        @default("")
 }
 
 model Packprompt{
