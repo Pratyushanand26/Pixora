@@ -156,6 +156,15 @@ app.get("/image/bulk",authMiddleware,async(req:Request,res:Response)=>{
 })
 })
 
+app.get("/models",authMiddleware,async(req,res)=>{
+   const models=await prisma.model.findMany({
+    where:{
+      userId:req.userId
+    }
+   })
+   res.json({models})
+})
+
 app.post("/fal-ai/webhook/image",async(req:Request,res:Response)=>{
  const requestId=req.body.request_id;
 

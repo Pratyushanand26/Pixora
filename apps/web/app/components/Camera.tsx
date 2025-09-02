@@ -11,7 +11,7 @@ interface ImageItem {
   imageUrl: string;
 }
 
-export default function CameraComponent({
+export async function CameraComponent({
   setActiveTab,
 }: {
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;

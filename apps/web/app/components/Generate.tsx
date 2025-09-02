@@ -1,28 +1,36 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { BACKEND_URL } from "../config";
+import axios from "axios"
+
+
+interface IModel{
+  id:string,
+  name:string,
+  imageUrl:string
+}
 
 export function GenerateComponent() {
   const [prompt, setPrompt] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
+  const [model,setModel]=useState<IModel[]>([]);
 
-  const models = [
-    {
-      id: "scarlett",
-      name: "Scarlett Johansson",
-      image: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=300"
-    },
-    {
-      id: "tom",
-      name: "Tom Cruise",
-      image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=300"
-    },
-    {
-      id: "sydney",
-      name: "Sydney Sweeney",
-      image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300"
-    }
-  ];
+  const {getToken}=useAuth();
+
+  useEffect(()=>{
+    (async()=>{
+      const token = await getToken();
+        const res = await axios.get(`${BACKEND_URL}/models`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setModel(res.data.models)
+    })
+  })
+
 
   return (
     <div>
@@ -36,7 +44,7 @@ export function GenerateComponent() {
         <div className="bg-slate-800 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Select Model</h3>
           <div className="grid grid-cols-1 gap-4">
-            {models.map((model) => (
+            {model.map((model) => (
               <div
                 key={model.id}
                 onClick={() => setSelectedModel(model.id)}
@@ -47,7 +55,7 @@ export function GenerateComponent() {
                 }`}
               >
                 <img
-                  src={model.image}
+                  src={model.imageUrl}
                   alt={model.name}
                   className="w-12 h-12 rounded-full object-cover mr-4"
                 />
