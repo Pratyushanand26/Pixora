@@ -8,6 +8,7 @@ import { TrainComponent } from '../components/Train';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('train');
+  const [selectedmodelid,setSelectedmodelid]=useState<string>("");
 
   const renderContent = () => {
     switch (activeTab) {
@@ -16,7 +17,7 @@ export default function Dashboard() {
       case 'camera':
         return <CameraComponent setActiveTab={setActiveTab} />;
       case 'packs':
-        return <PacksComponent />;
+        return <PacksComponent modelId={selectedmodelid}/>;
       case 'generate':
         return <GenerateComponent />;
       default:

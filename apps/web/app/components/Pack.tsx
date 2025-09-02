@@ -1,5 +1,6 @@
 import axios from "axios"
 import { BACKEND_URL } from "../config";
+import {useAuth} from "@clerk/nextjs"
 
 async function getPacks():Promise<TPack[]>{
   const res=await axios.get(`${BACKEND_URL}/pack/bulk`)
@@ -13,9 +14,10 @@ interface TPack{
    imageUrl:string
   }
 
-export async function PacksComponent() {
+export async function PacksComponent({modelId}:{modelId:string}) {
 
   const packs=await getPacks();
+  const {getToken}=useAuth();
 
   return (
     <div>
@@ -26,7 +28,18 @@ export async function PacksComponent() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {packs.map((pack) => (
-          <div key={pack.id} className="bg-slate-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-orange-500 transition-all">
+          <div key={pack.id} className="bg-slate-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-orange-500 transition-all" onClick={async()=>{
+            const token = await getToken();
+              const res = await axios.post(`${BACKEND_URL}/models`,{
+                packId:pack.id,
+                modelId:modelId
+              } ,{
+                headers: {
+                  Authorization: `Bearer ${token}`   
+                },
+              }
+            )
+          }}>
             <div className="aspect-video bg-slate-700">
               <img 
                 src={pack.imageUrl} 

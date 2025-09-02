@@ -78,6 +78,18 @@ export function GenerateComponent() {
           <button
             disabled={!selectedModel || !prompt}
             className="w-full mt-4 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-md font-medium"
+            onClick={async ()=>{
+              const token=await getToken();
+              await axios.post(`${BACKEND_URL}/ai/generate`,{
+                prompt,
+                modelId:selectedModel,
+                num:1
+              },{
+                headers:{
+                  Authorization:`Bearer ${token}`
+                }
+              })
+            }}
           >
             Generate Image
           </button>

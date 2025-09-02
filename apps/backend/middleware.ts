@@ -19,6 +19,11 @@ export function authMiddleware(req:Request,res:Response,next:NextFunction){
            req.userId=decoded.sub as string;
            next()
         }
+        else{
+            res.status(403).json({
+            message:"jwt token not verified"
+        })
+        }
     }catch(e){
         res.status(403).json({
             message:"jwt token not verified"

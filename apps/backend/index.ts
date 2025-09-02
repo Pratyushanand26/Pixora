@@ -185,6 +185,8 @@ res.json({
 app.post("/fal-ai/webhook/train",async(req:Request,res:Response)=>{
   const requestId=req.body.request_id
 
+  const {imageUrl}=await falaimodel.generateImageSync(req.body.tensor_path)
+
   await prisma.model.updateMany({
     where:{
       falAiRequestId:requestId
@@ -192,6 +194,7 @@ app.post("/fal-ai/webhook/train",async(req:Request,res:Response)=>{
     data:{
       status:"Generated",
       tensorPath:req.body.tensor_path,
+      imageUrl:imageUrl
     }
 })
 res.json({
